@@ -16,30 +16,35 @@ namespace TestCoreAPI.Controllers
       _people = people;
     }
 
-    // GET: api/values
+    // GET: api/people
     [HttpGet]
     public IActionResult Get()
     {
       return Ok(_people.Get());
     }
 
-    // GET api/values/5
+    // GET api/people/3
     [HttpGet("{id}")]
     public IActionResult Get(int id)
     {
       return Ok(_people.Get().Where(p => p.Id == id).FirstOrDefault());
     }
 
-    // POST api/values
+    // POST api/people
     [HttpPost]
     public IActionResult Post([FromBody]Person value)
     {
+      if (string.IsNullOrWhiteSpace(value.Name))
+      {
+        return HttpBadRequest("Name cannot be empty");
+      }
+
       value.Id = _people.Get().Max(p => p.Id) + 1;
       _people.Add(value);
       return Created($"/api/people/{value.Id}", value);
     }
 
-    // PUT api/values/5
+    // PUT api/people/3
     [HttpPut("{id}")]
     public IActionResult Put(int id, [FromBody]Person value)
     {
@@ -53,7 +58,7 @@ namespace TestCoreAPI.Controllers
       return Ok(p);
     }
 
-    // DELETE api/values/5
+    // DELETE api/people/3
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
